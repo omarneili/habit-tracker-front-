@@ -1,0 +1,84 @@
+<div class="admin-login-container">
+  <!-- Particules animées en arrière-plan -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="admin-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <h1>Espace Administrateur</h1>
+      <p>Accès réservé aux administrateurs</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope input-icon"></i>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="Entrez votre email"
+            [class.error]="isFieldInvalid('email')"
+          >
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock input-icon"></i>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="Entrez votre mot de passe"
+            [class.error]="isFieldInvalid('password')"
+          >
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="login-error" *ngIf="loginError">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ loginError }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="login-btn"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">
+          <i class="fas fa-sign-in-alt"></i>
+          Se connecter
+        </span>
+        <span *ngIf="isLoading" class="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Connexion...
+        </span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Accès réservé aux administrateurs autorisés</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,220 @@
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-logo">
+    <img src="assets/images/hbt.jpg" alt="HabitTracker Logo" class="logo-image">
+      <span class="logo-text">HabitTracker</span>
+    </div>
+  </div>
+
+  <ul class="navbar-menu">
+    <li><a routerLink="/home" class="nav-link">Accueil</a></li>
+    <li><a routerLink="/dashboard" class="nav-link active">Tableau de bord</a></li>
+    <li><a routerLink="/habits" class="nav-link">Mes habitudes</a></li>
+    <li><a routerLink="/statistics" class="nav-link">Statistiques</a></li>
+    <li><a routerLink="/about" class="nav-link">À propos</a></li>
+  </ul>
+
+  <div class="navbar-actions">
+    <div class="user-welcome">
+      <span class="welcome-text">Bonjour, Utilisateur! 👋</span>
+      <div class="streak-counter">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-days">12 jours</span>
+      </div>
+    </div>
+    <button class="btn-theme-toggle" title="Toggle Dark Mode" (click)="themeService.toggleTheme()">
+      <span class="theme-icon">{{ (themeService.isDarkMode$ | async) ? '🌙' : '☀️' }}</span>
+    </button>
+    <button class="btn-sound-settings" title="Paramètres son">
+      <span class="sound-icon">🎶</span>
+    </button>
+    <button class="btn-logout">
+      <span class="logout-icon">🚪</span>
+      Déconnexion
+    </button>
+  </div>
+</nav>
+
+<div class="analytics-dashboard">
+  <!-- En-tête Analytique -->
+  <header class="analytics-header">
+    <div class="header-main">
+      <h1 class="analytics-title">
+        <span class="analytics-icon">📈</span>
+        Analytics & Performance
+      </h1>
+      <p class="analytics-subtitle">Données détaillées et métriques avancées</p>
+    </div>
+    <div class="header-controls">
+      <select class="period-selector" [(ngModel)]="selectedPeriod" (change)="onPeriodChange(selectedPeriod)">
+        <option value="this_week">Cette semaine</option>
+        <option value="last_week">Semaine dernière</option>
+        <option value="this_month">Ce mois</option>
+        <option value="last_month">Mois dernier</option>
+      </select>
+      <button class="btn-export" (click)="exportData()">
+        <span class="export-icon">📊</span>
+        Exporter
+      </button>
+    </div>
+  </header>
+
+  <!-- Métriques de Performance -->
+  <section class="metrics-section">
+    <div class="section-header">
+      <h2>Indicateurs Clés de Performance</h2>
+      <button class="btn-toggle-metrics" (click)="toggleAdvancedMetrics()">
+        {{ showAdvancedMetrics ? 'Métriques simples' : 'Métriques avancées' }}
+      </button>
+    </div>
+    
+    <div class="metrics-grid">
+      <div *ngFor="let metric of performanceMetrics" class="metric-card">
+        <div class="metric-header">
+          <span class="metric-name">{{ metric.name }}</span>
+          <span class="metric-trend" [style.color]="getTrendColor(metric.trend)">
+            {{ getTrendIcon(metric.trend) }}
+          </span>
+        </div>
+        <div class="metric-value">{{ metric.value }}%</div>
+        <div class="metric-change" [class.positive]="metric.change > 0" [class.negative]="metric.change < 0">
+          {{ metric.change > 0 ? '+' : '' }}{{ metric.change }}%
+        </div>
+        <div class="metric-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="metric.value"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grille Principale d'Analytics -->
+  <div class="analytics-grid">
+    <!-- Comparaison Périodique -->
+    <div class="analytics-card comparison-card">
+      <div class="card-header">
+        <h3>📊 Comparaison Périodique</h3>
+        <span class="card-badge">Performance</span>
+      </div>
+      <div class="comparison-grid">
+        <div *ngFor="let data of analyticsData" class="comparison-item">
+          <div class="period">{{ data.period }}</div>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-value">{{ data.completionRate }}%</span>
+              <span class="stat-label">Taux</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ data.habitsCompleted }}</span>
+              <span class="stat-label">Accomplis</span>
+            </div>
+          </div>
+          <div class="progress-indicator">
+            <div class="progress-circle" [style.--percentage]="data.completionRate">
+              <span class="percentage">{{ data.completionRate }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance par Habitude -->
+    <div class="analytics-card performance-card">
+      <div class="card-header">
+        <h3>🎯 Performance par Habitude</h3>
+        <span class="card-badge">Détail</span>
+      </div>
+      <div class="performance-list">
+        <div *ngFor="let habit of habitPerformance" class="performance-item">
+          <div class="habit-info">
+            <span class="habit-name">{{ habit.name }}</span>
+            <div class="habit-stats">
+              <span class="completion-rate">{{ habit.completionRate }}%</span>
+              <span class="streak">🔥 {{ habit.streak }}j</span>
+            </div>
+          </div>
+          <div class="trend-indicator" [style.color]="getTrendColor(habit.trend)">
+            {{ getTrendIcon(habit.trend) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribution Temporelle -->
+    <div class="analytics-card distribution-card">
+      <div class="card-header">
+        <h3>⏰ Distribution Temporelle</h3>
+        <span class="card-badge">Planning</span>
+      </div>
+      <div class="distribution-chart">
+        <div *ngFor="let dist of timeDistribution" class="distribution-item">
+          <div class="distribution-header">
+            <span class="time-category">{{ dist.category }}</span>
+            <span class="percentage">{{ dist.percentage }}%</span>
+          </div>
+          <div class="distribution-bar">
+            <div class="bar-fill" [style.width.%]="dist.percentage"></div>
+          </div>
+          <div class="habits-count">{{ dist.habits }} habitude(s)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights et Recommandations -->
+    <div class="analytics-card insights-card">
+      <div class="card-header">
+        <h3>💡 Insights Intelligents</h3>
+        <span class="card-badge">AI</span>
+      </div>
+      <div class="insights-list">
+        <div class="insight-item positive">
+          <div class="insight-icon">🚀</div>
+          <div class="insight-content">
+            <div class="insight-title">Performance exceptionnelle le matin</div>
+            <div class="insight-desc">Vos habitudes matinales ont un taux de réussite de 92%</div>
+          </div>
+        </div>
+        <div class="insight-item warning">
+          <div class="insight-icon">⚠️</div>
+          <div class="insight-content">
+            <div class="insight-title">Baisse en milieu de semaine</div>
+            <div class="insight-desc">Votre motivation diminue généralement le mercredi</div>
+          </div>
+        </div>
+        <div class="insight-item suggestion">
+          <div class="insight-icon">💡</div>
+          <div class="insight-content">
+            <div class="insight-title">Optimisation suggérée</div>
+            <div class="insight-desc">Essayez de planifier les habitudes difficiles le matin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métriques Avancées (Conditionnel) -->
+  <section *ngIf="showAdvancedMetrics" class="advanced-metrics">
+    <div class="section-header">
+      <h2>📊 Métriques Avancées</h2>
+    </div>
+    <div class="advanced-grid">
+      <div class="metric-advanced">
+        <div class="metric-title">Coefficient de Variation</div>
+        <div class="metric-value">0.24</div>
+        <div class="metric-desc">Stabilité dans l'exécution</div>
+      </div>
+      <div class="metric-advanced">
+        <div class="metric-title">Tendance à 30 jours</div>
+        <div class="metric-value positive">+8.2%</div>
+        <div class="metric-desc">Amélioration constante</div>
+      </div>
+      <div class="metric-advanced">
+        <div class="metric-title">Score de Consistance</div>
+        <div class="metric-value">87/100</div>
+        <div class="metric-desc">Très régulier</div>
+      </div>
+    </div>
+  </section>
+</div>

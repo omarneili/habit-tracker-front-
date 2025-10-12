@@ -1,0 +1,295 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-logo">
+    <img src="assets/images/hbt.jpg" alt="HabitTracker Logo" class="logo-image">
+      <span class="logo-text">HabitTracker</span>
+    </div>
+  </div>
+
+  <ul class="navbar-menu">
+    <li><a class="nav-link active">Accueil</a></li>
+    <li><a routerLink="/dashboard" class="nav-link">Tableau de bord</a></li>
+    <li><a routerLink="/habits" class="nav-link">Mes habitudes</a></li>
+    <li><a routerLink="/statistics" class="nav-link">Statistiques</a></li>
+    <li><a routerLink="/about" class="nav-link">À propos</a></li>
+    <li><a routerLink="/admin/login" class="nav-link admin-link">Admin</a></li>
+  </ul>
+
+  <div class="navbar-actions">
+    <div class="user-welcome">
+      <span class="welcome-text">Bonjour, Utilisateur! 👋</span>
+      <div class="streak-counter">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-days">12 jours</span>
+      </div>
+    </div>
+    <button class="btn-theme-toggle" (click)="toggleTheme()" [title]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'">
+      <span class="theme-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
+    </button>
+    <button class="btn-sound-settings" (click)="toggleSoundSettings()" title="Paramètres son">
+      <span class="sound-icon">🎶</span>
+    </button>
+    <button class="btn-logout" (click)="logout()">
+      <span class="logout-icon">🚪</span>
+      Déconnexion
+    </button>
+  </div>
+</nav>
+
+<div class="home-container">
+  <!-- Section Hero -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          <span class="title-gradient">Bienvenue sur votre</span>
+          <span class="title-main">Tableau de Bord</span>
+        </h1>
+        <p class="hero-subtitle">
+          Suivez votre progression et construisez des habitudes durables
+        </p>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Accomplies aujourd'hui</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Habitudes totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">75%</div>
+            <div class="stat-label">Taux de réussite</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="progress-circle">
+          <div class="circle-bg"></div>
+          <div class="circle-progress"></div>
+          <div class="circle-text">
+            <span class="progress-percent">75%</span>
+            <span class="progress-label">Complété</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Aujourd'hui -->
+  <section class="today-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="section-icon">📅</span>
+        Habitudes du Jour
+      </h2>
+      <div class="date-display">{{ currentDate }}</div>
+    </div>
+
+    <div class="habits-grid">
+      <div class="habit-card" *ngFor="let habit of habits; let i = index" [class.completed]="habit.completed">
+        <div class="habit-icon">{{ getHabitIcon(habit.name) }}</div>
+        <div class="habit-content">
+          <div class="habit-name">{{ habit.name }}</div>
+          <div class="habit-time">{{ habit.time }}</div>
+          <div class="habit-streak">
+            <span class="streak-icon">🔥</span>
+            <span>5 jours</span>
+          </div>
+        </div>
+        <div class="habit-checkbox" (click)="toggleHabitCompletion(i)">
+          <div class="checkbox" [class.checked]="habit.completed">
+            <span>✓</span>
+          </div>
+        </div>
+        <button class="delete-btn" (click)="confirmDelete(i)">×</button>
+      </div>
+
+      <div *ngIf="!showForm" class="add-habit-card" (click)="toggleForm()">
+        <div class="add-icon">+</div>
+        <div class="add-text">Ajouter une habitude</div>
+      </div>
+
+      <div *ngIf="showForm" class="add-habit-form">
+        <form (ngSubmit)="addHabit()">
+          <div class="form-group">
+            <label for="habit-select">Sélectionner une habitude:</label>
+            <select id="habit-select" [(ngModel)]="newHabit.name" name="name" (change)="onHabitChange()" required>
+              <option value="">Choisir une habitude</option>
+              <option *ngFor="let habit of habitOptions" [value]="habit">{{ habit }}</option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="showCustomHabitInput">
+            <label for="custom-habit-input">Nom de l'habitude personnalisée:</label>
+            <input id="custom-habit-input" type="text" [(ngModel)]="customHabitName" name="customName" placeholder="Entrez le nom de votre habitude" required>
+          </div>
+          <div class="form-group">
+            <label for="time-input">Heure:</label>
+            <input id="time-input" type="time" [(ngModel)]="newHabit.time" name="time" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-add">Ajouter</button>
+            <button type="button" (click)="toggleForm()" class="btn-cancel">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Statistiques -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-large">
+        <h3>Progression de la semaine</h3>
+        <div class="week-bars">
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 80%"></div>
+            <span class="day-label">L</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 60%"></div>
+            <span class="day-label">M</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 90%"></div>
+            <span class="day-label">M</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 70%"></div>
+            <span class="day-label">J</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 85%"></div>
+            <span class="day-label">V</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 75%"></div>
+            <span class="day-label">S</span>
+          </div>
+          <div class="day-bar">
+            <div class="bar-fill" style="height: 95%"></div>
+            <span class="day-label">D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-large">
+        <h3>Habitudes par Catégorie</h3>
+        <div class="categories-list">
+          <div class="category-item">
+            <span class="category-name">Santé</span>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+              </div>
+              <span class="category-count">3</span>
+            </div>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Apprentissage</span>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+              </div>
+              <span class="category-count">2</span>
+            </div>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Bien-être</span>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+              <span class="category-count">2</span>
+            </div>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Productivité</span>
+            <div class="category-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+              </div>
+              <span class="category-count">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Motivation -->
+  <section class="motivation-section">
+    <div class="motivation-card">
+      <div class="motivation-icon">💪</div>
+      <div class="motivation-content">
+        <h3>Continuez comme ça !</h3>
+        <p>Vous avez complété 75% de vos habitudes cette semaine !</p>
+        <div class="motivation-progress">
+          <div class="progress-text">
+            <span>Prochain objectif : 15 jours consécutifs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteConfirm" class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirmer la suppression</h3>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette habitude ?</p>
+<p class="habit-name-confirm">{{ habits[deleteIndex].name }}</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel-modal" (click)="cancelDelete()">Annuler</button>
+        <button class="btn-delete-modal" (click)="deleteHabit()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound Settings Modal -->
+  <div *ngIf="showSoundSettings" class="modal-overlay" (click)="toggleSoundSettings()">
+    <div class="modal-content sound-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Paramètres de notification</h3>
+        <button class="close-btn" (click)="toggleSoundSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="sound-setting">
+          <label class="setting-label">Son de notification:</label>
+          <div class="sound-options">
+            <div *ngFor="let sound of soundOptions"
+                 class="sound-option"
+                 [class.selected]="sound.id === selectedSound"
+                 (click)="onSoundChange(sound.id)">
+              <div class="sound-info">
+                <span class="sound-name">{{ sound.name }}</span>
+                <span class="sound-description">{{ sound.description }}</span>
+              </div>
+              <button class="preview-btn" (click)="$event.stopPropagation(); previewSound()" title="Écouter">
+                <span class="preview-icon">▶️</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="volume-setting">
+          <label class="setting-label">Volume: {{ (soundVolume * 100) | number:'1.0-0' }}%</label>
+          <input type="range"
+                 min="0"
+                 max="1"
+                 step="0.1"
+                 [value]="soundVolume"
+                 (input)="onVolumeChange($any($event.target).value)"
+                 class="volume-slider">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" (click)="toggleSoundSettings()">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>

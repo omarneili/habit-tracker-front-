@@ -1,0 +1,396 @@
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-logo">
+    <img src="assets/images/hbt.jpg" alt="HabitTracker Logo" class="logo-image">
+      <span class="logo-text">HabitTracker</span>
+    </div>
+  </div>
+
+  <ul class="navbar-menu">
+    <li><a routerLink="/home" class="nav-link">Accueil</a></li>
+    <li><a routerLink="/dashboard" class="nav-link">Tableau de bord</a></li>
+    <li><a routerLink="/habits" class="nav-link active">Mes habitudes</a></li>
+    <li><a routerLink="/statistics" class="nav-link">Statistiques</a></li>
+    <li><a routerLink="/about" class="nav-link">À propos</a></li>
+  </ul>
+
+  <div class="navbar-actions">
+    <div class="user-welcome">
+      <span class="welcome-text">Bonjour, Utilisateur! 👋</span>
+      <div class="streak-counter">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-days">12 jours</span>
+      </div>
+    </div>
+    <button class="btn-sound-settings" title="Paramètres son">
+      <span class="sound-icon">🎶</span>
+    </button>
+    <button class="btn-theme-toggle" title="Toggle Dark Mode" (click)="themeService.toggleTheme()">
+      <span class="theme-icon">{{ (themeService.isDarkMode$ | async) ? '🌙' : '☀️' }}</span>
+    </button>
+    <button class="btn-logout">
+      <span class="logout-icon">🚪</span>
+      Déconnexion
+    </button>
+  </div>
+</nav>
+
+<div class="habits-container">
+  <!-- Header avec Glassmorphism -->
+  <header class="habits-header">
+    <div class="header-content">
+      <div class="header-main">
+        <div class="header-title">
+          <div class="title-icon">🌱</div>
+          <div>
+            <h1>Gestion des Habitudes</h1>
+            <p>Transformez vos objectifs en routines durables</p>
+          </div>
+        </div>
+        <button class="btn-create" (click)="startCreatingHabit()">
+          <span class="btn-icon">+</span>
+          Nouvelle Habitude
+        </button>
+      </div>
+      
+      <!-- Statistiques Rapides -->
+      <div class="header-stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ getActiveHabits().length }}</div>
+          <div class="stat-label">Actives</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ habits.length }}</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ categories.length }}</div>
+          <div class="stat-label">Catégories</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contrôles de Vue -->
+  <section class="view-controls">
+    <div class="controls-left">
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'grid'"
+          (click)="setViewMode('grid')">
+          <span class="toggle-icon">⊞</span>
+          Grille
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'list'"
+          (click)="setViewMode('list')">
+          <span class="toggle-icon">≡</span>
+          Liste
+        </button>
+      </div>
+      
+      <!-- Filtres par Catégorie -->
+      <div class="category-filters">
+        <button 
+          class="filter-btn" 
+          [class.active]="selectedCategory === 'all'"
+          (click)="setCategory('all')">
+          <span class="filter-icon">🌐</span>
+          Toutes
+        </button>
+        <button 
+          *ngFor="let cat of categories" 
+          class="filter-btn"
+          [class.active]="selectedCategory === cat.value"
+          (click)="setCategory(cat.value)">
+          <span class="filter-icon">{{ cat.icon }}</span>
+          {{ cat.label }}
+        </button>
+      </div>
+    </div>
+    
+    <div class="controls-right">
+      <div class="search-box">
+        <input type="text" placeholder="Rechercher une habitude..." class="search-input">
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de Création/Édition -->
+  <div *ngIf="isCreatingHabit" class="modal-overlay" (click)="cancelCreation()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editMode ? 'Modifier l\'habitude' : 'Nouvelle Habitude' }}</h2>
+        <button class="modal-close" (click)="cancelCreation()">×</button>
+      </div>
+      
+      <form [formGroup]="habitsForm" (ngSubmit)="saveHabit()" class="habit-form">
+        <div class="form-section">
+          <label class="form-label">Informations de base</label>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom de l'habitude *</label>
+              <input 
+                type="text" 
+                formControlName="name"
+                placeholder="Ex: Méditation du matin"
+                class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label>Catégorie *</label>
+              <select formControlName="category" class="form-select">
+                <option value="">Sélectionner une catégorie</option>
+                <option *ngFor="let cat of categories" [value]="cat.value">
+                  {{ cat.icon }} {{ cat.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Configuration</label>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Fréquence *</label>
+              <select formControlName="frequency" class="form-select">
+                <option *ngFor="let freq of frequencies" [value]="freq.value">
+                  {{ freq.icon }} {{ freq.label }}
+                </option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Priorité</label>
+              <select formControlName="priority" class="form-select">
+                <option *ngFor="let priority of priorities" [value]="priority.value">
+                  {{ priority.icon }} {{ priority.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Personnalisation</label>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Objectif</label>
+              <input 
+                type="text" 
+                formControlName="goal"
+                placeholder="Ex: 30 minutes par jour"
+                class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label>Couleur</label>
+              <div class="color-picker">
+                <input type="color" formControlName="color" class="color-input">
+                <span class="color-preview" [style.background]="habitsForm.get('color')?.value"></span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Tags (séparés par des virgules)</label>
+            <input 
+              type="text" 
+              formControlName="tags"
+              placeholder="Ex: bien-être, matinal, santé"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Paramètres avancés</label>
+          <div class="switch-group">
+            <label class="switch">
+              <input type="checkbox" formControlName="reminder">
+              <span class="slider"></span>
+              <span class="switch-label">Activer les rappels</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelCreation()">
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="!habitsForm.valid">
+            {{ editMode ? 'Modifier' : 'Créer' }} l'habitude
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Vue Grille -->
+  <section *ngIf="viewMode === 'grid'" class="habits-grid">
+    <div *ngFor="let habit of getActiveHabits()" class="habit-card">
+      <div class="card-header">
+        <div class="habit-badge" [style.background]="getCategoryColor(habit.category)">
+          {{ getCategoryIcon(habit.category) }}
+        </div>
+        <div class="card-actions">
+          <button class="action-btn edit" (click)="startEditingHabit(habit)" title="Modifier">
+            <span class="action-icon">✏️</span>
+          </button>
+          <button class="action-btn delete" (click)="deleteHabit(habit.id)" title="Supprimer">
+            <span class="action-icon">🗑️</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <h3 class="habit-name">{{ habit.name }}</h3>
+        <p class="habit-goal" *ngIf="habit.goal">{{ habit.goal }}</p>
+        
+        <div class="habit-meta">
+          <span class="meta-item">
+            <span class="meta-icon">🕒</span>
+            {{ habit.frequency }}
+          </span>
+          <span class="meta-item">
+            <span class="meta-icon" [style.color]="getPriorityInfo(habit.priority).color">
+              {{ getPriorityInfo(habit.priority).icon }}
+            </span>
+            {{ getPriorityInfo(habit.priority).label }}
+          </span>
+        </div>
+        
+        <div class="tags-container" *ngIf="habit.tags.length > 0">
+          <span *ngFor="let tag of habit.tags" class="tag">{{ tag }}</span>
+        </div>
+      </div>
+      
+      <div class="card-footer">
+        <div class="progress-stats">
+          <div class="streak-counter">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-value">{{ habit.streak }} jours</span>
+          </div>
+          <div class="completion-rate">
+            <div class="rate-value" [style.color]="getCompletionRateColor(habit.completionRate)">
+              {{ habit.completionRate }}%
+            </div>
+            <div class="rate-label">réussite</div>
+          </div>
+        </div>
+        
+        <button 
+          class="status-toggle"
+          [class.inactive]="!habit.isActive"
+          (click)="toggleHabitStatus(habit)">
+          {{ habit.isActive ? 'Actif' : 'Inactif' }}
+        </button>
+      </div>
+    </div>
+    
+    <!-- Carte Vide pour Nouvelle Habitude -->
+    <div class="habit-card empty-card" (click)="startCreatingHabit()">
+      <div class="empty-content">
+        <span class="empty-icon">+</span>
+        <h3>Nouvelle Habitude</h3>
+        <p>Cliquez pour commencer</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vue Liste -->
+  <section *ngIf="viewMode === 'list'" class="habits-list">
+    <div class="list-header">
+      <div class="header-col name">Habitude</div>
+      <div class="header-col category">Catégorie</div>
+      <div class="header-col frequency">Fréquence</div>
+      <div class="header-col streak">Série</div>
+      <div class="header-col rate">Taux</div>
+      <div class="header-col status">Statut</div>
+      <div class="header-col actions">Actions</div>
+    </div>
+    
+    <div *ngFor="let habit of getActiveHabits()" class="list-item">
+      <div class="item-col name">
+        <div class="habit-main">
+          <div class="habit-icon" [style.background]="habit.color">
+            {{ habit.icon }}
+          </div>
+          <div>
+            <div class="habit-name">{{ habit.name }}</div>
+            <div class="habit-goal" *ngIf="habit.goal">{{ habit.goal }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="item-col category">
+        <span class="category-badge" [style.background]="getCategoryColor(habit.category)">
+          {{ getCategoryIcon(habit.category) }} {{ getCategoryLabel(habit.category) }}
+        </span>
+      </div>
+      
+      <div class="item-col frequency">
+        {{ habit.frequency }}
+      </div>
+      
+      <div class="item-col streak">
+        <div class="streak-display">
+          <span class="streak-icon">🔥</span>
+          {{ habit.streak }}j
+        </div>
+      </div>
+      
+      <div class="item-col rate">
+        <div class="rate-display" [style.color]="getCompletionRateColor(habit.completionRate)">
+          {{ habit.completionRate }}%
+        </div>
+      </div>
+      
+      <div class="item-col status">
+        <div class="status-badge" [class.active]="habit.isActive">
+          {{ habit.isActive ? 'Actif' : 'Inactif' }}
+        </div>
+      </div>
+      
+      <div class="item-col actions">
+        <div class="action-buttons">
+          <button class="action-btn edit" (click)="startEditingHabit(habit)">
+            <span class="action-icon">✏️</span>
+          </button>
+          <button class="action-btn toggle" (click)="toggleHabitStatus(habit)">
+            <span class="action-icon">{{ habit.isActive ? '⏸️' : '▶️' }}</span>
+          </button>
+          <button class="action-btn delete" (click)="deleteHabit(habit.id)">
+            <span class="action-icon">🗑️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistiques par Catégorie -->
+  <section class="category-stats">
+    <h2 class="section-title">Répartition par Catégorie</h2>
+    <div class="stats-grid">
+      <div *ngFor="let stat of getCategoryStats()" class="stat-card">
+        <div class="stat-icon" [style.background]="stat.color">
+          {{ stat.icon }}
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stat.count }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+          <div class="stat-bar">
+            <div class="bar-fill" [style.width.%]="stat.percentage"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

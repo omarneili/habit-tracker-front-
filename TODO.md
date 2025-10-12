@@ -1,0 +1,6 @@
+- [x] Create theme service (src/app/services/theme.service.ts)
+- [x] Update global styles.css with light and dark theme variables
+- [x] Update app.component.ts to inject theme service and apply class
+- [x] Add theme toggle button in dashboard navbar
+- [x] Add dark mode theme to habits component CSS
+- [x] Test dark mode toggle and persistence

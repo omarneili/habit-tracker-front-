@@ -1,0 +1,399 @@
+<div class="about-container">
+  <!-- Navigation Élégante -->
+  <nav class="about-nav" id="nav">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-icon">🌱</span>
+        <span class="logo-text">HabitTracker</span>
+      </div>
+      <div class="nav-links">
+        <a (click)="scrollToSection('hero')" class="nav-link">Accueil</a>
+        <a (click)="scrollToSection('mission')" class="nav-link">Mission</a>
+        <a (click)="scrollToSection('team')" class="nav-link">Équipe</a>
+        <a (click)="scrollToSection('palestine')" class="nav-link">Solidarité</a>
+        <a (click)="scrollToSection('contact')" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-cta" (click)="scrollToSection('contact')">
+          Nous Contacter
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section avec Animation -->
+  <section class="hero-section" id="hero">
+    <div class="hero-background">
+      <div class="hero-orbit orbit-1"></div>
+      <div class="hero-orbit orbit-2"></div>
+      <div class="hero-orbit orbit-3"></div>
+    </div>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-text">Innovation & Excellence</span>
+        </div>
+        <h1 class="hero-title">
+          Transformez vos 
+          <span class="title-highlight">Habitudes</span>
+          en Réussite
+        </h1>
+        <p class="hero-description">
+          HabitTracker révolutionne la manière dont vous développez et maintenez vos habitudes. 
+          Notre plateforme intelligente combine technologie de pointe et psychologie comportementale 
+          pour vous aider à atteindre vos objectifs.
+        </p>
+        <div class="hero-stats">
+          <div *ngFor="let stat of stats" class="stat-item">
+            <div class="stat-number">{{ stat.number }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary" (click)="scrollToSection('mission')">
+            Découvrir Notre Mission
+          </button>
+          <button class="btn-secondary" (click)="scrollToSection('contact')">
+            Commencer Maintenant
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="visual-sphere sphere-1"></div>
+        <div class="visual-sphere sphere-2"></div>
+        <div class="floating-card card-1">
+          <div class="card-icon">📈</div>
+          <h3>Progrès Visuels</h3>
+          <p>Suivez votre évolution</p>
+        </div>
+        <div class="floating-card card-2">
+          <div class="card-icon">🎯</div>
+          <h3>Objectifs Clairs</h3>
+          <p>Définissez vos cibles</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section" id="mission">
+    <div class="mission-container">
+      <div class="mission-content">
+        <div class="section-badge">Notre Vision</div>
+        <h2 class="section-title">Révolutionner le Développement Personnel</h2>
+        <p class="mission-text">
+          Chez HabitTracker, nous croyons que chaque petite habitude compte. 
+          Notre mission est de démocratiser l'accès aux outils de développement personnel 
+          en combinant technologie innovante et principes psychologiques éprouvés.
+        </p>
+        <div class="mission-grid">
+          <div class="mission-card">
+            <div class="card-header">
+              <div class="card-icon">🚀</div>
+              <h3>Innovation Continue</h3>
+            </div>
+            <p>Nous repoussons constamment les limites de la technologie pour améliorer votre expérience.</p>
+          </div>
+          <div class="mission-card">
+            <div class="card-header">
+              <div class="card-icon">❤️</div>
+              <h3>Impact Social</h3>
+            </div>
+            <p>Nous croyons en la technologie comme force positive pour le changement personnel et collectif.</p>
+          </div>
+          <div class="mission-card">
+            <div class="card-header">
+              <div class="card-icon">🌍</div>
+              <h3>Accessibilité</h3>
+            </div>
+            <p>Nous rendons le développement personnel accessible à tous, partout dans le monde.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="features-container">
+      <div class="section-header">
+        <div class="section-badge">Fonctionnalités</div>
+        <h2>Une Expérience Exceptionnelle</h2>
+        <p>Découvrez les fonctionnalités qui font la différence</p>
+      </div>
+      <div class="features-grid">
+        <div *ngFor="let feature of features; let i = index" class="feature-card" [style.animation-delay]="i * 0.1 + 's'">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+          <div class="feature-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team-section" id="team">
+    <div class="team-container">
+      <div class="section-header">
+        <div class="section-badge">Notre Équipe</div>
+        <h2>Les Esprits Créatifs Derrière HabitTracker</h2>
+        <p>Rencontrez les passionnés qui donnent vie à votre expérience</p>
+      </div>
+      <div class="team-grid">
+        <div *ngFor="let member of teamMembers" class="team-card">
+          <div class="member-visual">
+            <div class="image-container">
+              <img [src]="member.image" [alt]="member.name" class="member-image">
+              <div class="image-overlay">
+                <div class="social-links">
+                  <a [href]="'mailto:' + member.email" class="social-link">
+                    <span class="link-icon">✉️</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="member-glow"></div>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <div class="member-meta">
+              <span class="member-age">{{ member.age }} ans</span>
+              <span class="member-role">{{ member.role }}</span>
+            </div>
+            <p class="member-education">{{ member.education }}</p>
+            <p class="member-description">{{ member.description }}</p>
+            <div class="member-contact">
+              <a [href]="'mailto:' + member.email" class="email-link">
+                <span class="email-icon">📧</span>
+                {{ member.email }}
+              </a>
+            </div>
+            <div class="member-skills">
+              <span *ngFor="let skill of member.skills" class="skill-tag">{{ skill }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Palestine Solidarity Section -->
+  <section class="palestine-section" id="palestine">
+    <div class="palestine-container">
+      <div class="palestine-content">
+        <div class="section-badge">Solidarité</div>
+        <h2 class="section-title">Free Palestine</h2>
+        <div class="palestine-hero">
+          <div class="palestine-image-container">
+            <img src="assets/images/palestine.jpg" alt="Palestine" class="palestine-image">
+            <div class="image-overlay-text">
+              <span class="free-text">Free</span>
+              <span class="palestine-text">Palestine</span>
+            </div>
+          </div>
+          <div class="palestine-text-content">
+            <p class="palestine-message">
+              En tant que communauté engagée pour un monde meilleur, nous ne pouvons rester silencieux 
+              face à l'injustice. Nous soutenons le droit du peuple palestinien à vivre dans la dignité, 
+              la liberté et la paix sur sa terre ancestrale.
+            </p>
+            <p class="palestine-message">
+              La quête de justice et de droits humains fondamentaux est universelle. 
+              Nous croyons en un avenir où tous les peuples pourront coexister dans le respect 
+              mutuel et l'égalité des droits.
+            </p>
+            <div class="solidarity-actions">
+              <button class="solidarity-btn">
+                <span class="btn-icon">✊</span>
+                Soutenir la Cause
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="contact-container">
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="section-badge">Contact</div>
+          <h2>Travaillons Ensemble</h2>
+          <p class="contact-description">
+            Vous avez un projet, une question ou souhaitez simplement discuter ? 
+            Nous serions ravis d'échanger avec vous.
+          </p>
+          <div class="contact-methods">
+            <div class="contact-method">
+              <div class="method-icon">📧</div>
+              <div class="method-info">
+                <h4>Email</h4>
+                <p>contact&#64;habittracker.com</p>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="method-icon">🕒</div>
+              <div class="method-info">
+                <h4>Disponibilité</h4>
+                <p>Lun - Ven : 9h - 18h</p>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="method-icon">⚡</div>
+              <div class="method-info">
+                <h4>Réponse</h4>
+                <p>Sous 24 heures</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="contact-form-container">
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+            <h3>Envoyez-nous un Message</h3>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">Nom Complet *</label>
+                <input 
+                  id="name"
+                  type="text" 
+                  formControlName="name"
+                  placeholder="Votre nom complet"
+                  class="form-input"
+                  [class.error]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
+                <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="error-message">
+                  Le nom est requis (minimum 2 caractères)
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Adresse Email *</label>
+                <input 
+                  id="email"
+                  type="email" 
+                  formControlName="email"
+                  placeholder="votre@email.com"
+                  class="form-input"
+                  [class.error]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+                <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" class="error-message">
+                  Veuillez entrer une adresse email valide
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Sujet *</label>
+              <input 
+                id="subject"
+                type="text" 
+                formControlName="subject"
+                placeholder="Sujet de votre message"
+                class="form-input"
+                [class.error]="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched">
+              <div *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched" class="error-message">
+                Le sujet est requis (minimum 5 caractères)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message *</label>
+              <textarea 
+                id="message"
+                formControlName="message"
+                placeholder="Décrivez votre projet ou votre demande..."
+                rows="6"
+                class="form-textarea"
+                [class.error]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched"></textarea>
+              <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched" class="error-message">
+                Le message est requis (minimum 10 caractères)
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              class="submit-btn"
+              [disabled]="isSubmitting || contactForm.invalid">
+              <span *ngIf="!isSubmitting">Envoyer le Message</span>
+              <span *ngIf="isSubmitting" class="loading">
+                <span class="spinner"></span>
+                Envoi en cours...
+              </span>
+            </button>
+
+            <div *ngIf="submitSuccess" class="success-message">
+              <div class="success-icon">✅</div>
+              <div class="success-text">
+                <h4>Message envoyé avec succès !</h4>
+                <p>Nous vous répondrons dans les plus brefs délais.</p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="about-footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="logo-icon">🌱</span>
+            <span class="logo-text">HabitTracker</span>
+          </div>
+          <p class="footer-description">
+            Transformez vos habitudes, transformez votre vie. 
+            Rejoignez des milliers de personnes qui ont déjà commencé leur voyage vers une meilleure version d'elles-mêmes.
+          </p>
+        </div>
+        
+        <div class="footer-links">
+          <div class="link-group">
+            <h4>Navigation</h4>
+            <a (click)="scrollToSection('hero')">Accueil</a>
+            <a (click)="scrollToSection('mission')">Mission</a>
+            <a (click)="scrollToSection('team')">Équipe</a>
+            <a (click)="scrollToSection('contact')">Contact</a>
+          </div>
+          
+          <div class="link-group">
+            <h4>Support</h4>
+            <a href="#">Centre d'aide</a>
+            <a href="#">Documentation</a>
+            <a href="#">FAQ</a>
+            <a href="#">Tutoriels</a>
+          </div>
+          
+          <div class="link-group">
+            <h4>Légal</h4>
+            <a href="#">Confidentialité</a>
+            <a href="#">Conditions</a>
+            <a href="#">Cookies</a>
+            <a href="#">Mentions légales</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          <p>&copy; 2024 HabitTracker. Conçu avec ❤️ par Omar & Amine.</p>
+          <p>Ensemble, construisons un avenir meilleur.</p>
+        </div>
+        <div class="footer-social">
+          <span>Suivez notre aventure :</span>
+          <div class="social-icons">
+            <a href="#" class="social-link">📘</a>
+            <a href="#" class="social-link">🐦</a>
+            <a href="#" class="social-link">📷</a>
+            <a href="#" class="social-link">💼</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

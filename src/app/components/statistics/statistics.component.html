@@ -1,0 +1,260 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-logo">
+    <img src="assets/images/hbt.jpg" alt="HabitTracker Logo" class="logo-image">
+      <span class="logo-text">HabitTracker</span>
+    </div>
+  </div>
+
+  <ul class="navbar-menu">
+    <li><a routerLink="/home" class="nav-link">Accueil</a></li>
+    <li><a routerLink="/dashboard" class="nav-link">Tableau de bord</a></li>
+    <li><a  routerLink="/habits" class="nav-link">Mes habitudes</a></li>
+    <li><a routerLink="/statistics" class="nav-link active">Statistiques</a></li>
+    <li><a routerLink="/about" class="nav-link">À propos</a></li>
+  </ul>
+
+  <div class="navbar-actions">
+    <div class="user-welcome">
+      <span class="welcome-text">Bonjour, Utilisateur! 👋</span>
+      <div class="streak-counter">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-days">12 jours</span>
+      </div>
+    </div>
+    <button class="btn-theme-toggle" title="Toggle Dark Mode" (click)="themeService.toggleTheme()">
+      <span class="theme-icon">{{ (themeService.isDarkMode$ | async) ? '🌙' : '☀️' }}</span>
+    </button>
+  </div>
+</nav>
+<div class="statistics-container">
+  <!-- Header avec navigation temporelle -->
+  <header class="stats-header">
+    <div class="header-content">
+      <div class="header-main">
+        <div class="title-section">
+          <div class="title-icon">📊</div>
+          <div>
+            <h1>Analytics Dashboard</h1>
+            <p>Insights détaillés sur vos performances et progression</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-export" (click)="exportReport()">
+            <span class="btn-icon">📄</span>
+            Exporter PDF
+          </button>
+        </div>
+      </div>
+      
+      <div class="time-navigation">
+        <div class="time-buttons">
+          <button 
+            class="time-btn"
+            [class.active]="selectedTimeRange === 'week'"
+            (click)="onTimeRangeChange('week')">
+            Semaine
+          </button>
+          <button 
+            class="time-btn"
+            [class.active]="selectedTimeRange === 'month'"
+            (click)="onTimeRangeChange('month')">
+            Mois
+          </button>
+          <button 
+            class="time-btn"
+            [class.active]="selectedTimeRange === 'quarter'"
+            (click)="onTimeRangeChange('quarter')">
+            Trimestre
+          </button>
+          <button 
+            class="time-btn"
+            [class.active]="selectedTimeRange === 'year'"
+            (click)="onTimeRangeChange('year')">
+            Année
+          </button>
+        </div>
+        <button class="btn-advanced" (click)="toggleAdvancedView()">
+          {{ showAdvanced ? 'Vue Standard' : 'Vue Avancée' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cartes de statistiques principales -->
+  <section class="stats-overview">
+    <div class="stats-grid">
+      <div *ngFor="let card of statCards" class="stat-card" [style.--accent-color]="card.color">
+        <div class="card-glow"></div>
+        <div class="card-content">
+          <div class="card-header">
+            <div class="card-icon">{{ card.icon }}</div>
+            <div class="trend-indicator" [style.color]="getTrendColor(card.trend)">
+              {{ getTrendIcon(card.trend) }} {{ card.change > 0 ? '+' : '' }}{{ card.change }}%
+            </div>
+          </div>
+          <div class="card-value">{{ card.value }}</div>
+          <div class="card-title">{{ card.title }}</div>
+          <div class="progress-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="36" stroke="var(--gray-200)" stroke-width="4" fill="none"/>
+              <circle cx="40" cy="40" r="36" stroke="var(--accent-color)" stroke-width="4" fill="none"
+                      stroke-dasharray="226" [attr.stroke-dashoffset]="getProgressOffset(card.change)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grille principale des visualisations -->
+  <div class="visualization-grid">
+    <!-- Graphique de performance -->
+    <div class="viz-card main-chart">
+      <div class="viz-header">
+        <h3>Performance Globale</h3>
+        <div class="viz-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: #06b6d4"></div>
+            <span>Taux de réussite</span>
+          </div>
+        </div>
+      </div>
+      <div class="chart-placeholder">
+        <div class="mock-chart">
+          <div class="chart-bars">
+            <div *ngFor="let point of [65, 59, 80, 81, 76, 75, 80, 85, 82, 88, 90, 87]; let i = index" 
+                 class="chart-bar"
+                 [style.height.%]="point"
+                 [style.animation-delay.ms]="i * 100">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top habitudes -->
+    <div class="viz-card top-habits">
+      <div class="viz-header">
+        <h3>Top 5 Habitudes</h3>
+      </div>
+      <div class="habits-list">
+        <div *ngFor="let habit of topHabits; let i = index" class="habit-item">
+          <div class="habit-rank">{{ i + 1 }}</div>
+          <div class="habit-info">
+            <div class="habit-name">{{ habit.name }}</div>
+            <div class="habit-stats">
+              <span class="completion">{{ habit.completion }}%</span>
+              <span class="streak">🔥 {{ habit.streak }}j</span>
+            </div>
+          </div>
+          <div class="habit-trend" [style.color]="getTrendColor(habit.trend)">
+            {{ getTrendIcon(habit.trend) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribution par catégorie -->
+    <div class="viz-card distribution">
+      <div class="viz-header">
+        <h3>Répartition par Catégorie</h3>
+        <div class="total-count">12 habitudes totales</div>
+      </div>
+      <div class="distribution-content">
+        <div class="pie-chart">
+          <div *ngFor="let item of categoryDistribution; let i = index" 
+               class="pie-segment"
+               [style]="{
+                 '--percentage': item.percentage,
+                 '--color': item.color,
+                 '--start': i === 0 ? 0 : getCategoryStart(i)
+               }">
+          </div>
+        </div>
+        <div class="distribution-legend">
+          <div *ngFor="let item of categoryDistribution" class="legend-item">
+            <div class="legend-color" [style.background]="item.color"></div>
+            <div class="legend-text">
+              <span class="category-name">{{ item.category }}</span>
+              <span class="category-stats">{{ item.percentage }}% ({{ item.count }})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heatmap d'activité -->
+    <div class="viz-card heatmap">
+      <div class="viz-header">
+        <h3>Activité sur 90 jours</h3>
+        <div class="heatmap-legend">
+          <span>Peu</span>
+          <div class="legend-gradient"></div>
+          <span>Beaucoup</span>
+        </div>
+      </div>
+      <div class="heatmap-container">
+        <div class="heatmap-grid">
+          <div *ngFor="let day of generateHeatmapDays()" 
+               class="heatmap-day"
+               [class]="'level-' + day.level"
+               [title]="'Jour ' + day.day + ': ' + day.count + ' habitudes'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métriques avancées -->
+  <section *ngIf="showAdvanced" class="advanced-metrics">
+    <h2 class="section-title">Métriques Avancées</h2>
+    <div class="metrics-grid">
+      <div *ngFor="let metric of advancedMetrics" class="metric-card">
+        <div class="metric-header">
+          <h4>{{ metric.name }}</h4>
+          <span class="metric-trend" [style.color]="getTrendColor(metric.trend)">
+            {{ getTrendIcon(metric.trend) }}
+          </span>
+        </div>
+        <div class="metric-value">{{ metric.value }}/{{ metric.max }}</div>
+        <div class="metric-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="metric.value"></div>
+          </div>
+        </div>
+        <div class="metric-description">
+          Score calculé sur la base de vos performances récentes
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insights et recommandations -->
+  <section class="insights-section">
+    <h2 class="section-title">💡 Insights Intelligents</h2>
+    <div class="insights-grid">
+      <div class="insight-card positive">
+        <div class="insight-icon">🚀</div>
+        <div class="insight-content">
+          <h4>Performance Exceptionnelle</h4>
+          <p>Votre taux de réussite a augmenté de 12% ce mois-ci. Continuez comme ça !</p>
+        </div>
+      </div>
+      <div class="insight-card warning">
+        <div class="insight-icon">�</div>
+        <div class="insight-content">
+          <h4>Attention à la Diversité</h4>
+          <p>Votre score de diversité a baissé. Essayez de varier vos types d'habitudes.</p>
+        </div>
+      </div>
+      <div class="insight-card info">
+        <div class="insight-icon">�</div>
+        <div class="insight-content">
+          <h4>Point Fort Identifié</h4>
+          <p>Votre consistance est excellente (87%). C'est votre plus grande force !</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div> 

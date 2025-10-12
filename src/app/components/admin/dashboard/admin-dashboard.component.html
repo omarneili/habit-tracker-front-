@@ -1,0 +1,98 @@
+<div class="admin-dashboard-container">
+  <header class="admin-header">
+    <div class="header-content">
+      <div class="admin-info">
+        <div class="admin-icon">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="admin-details">
+          <h1>Espace Administrateur</h1>
+          <p>Connecté en tant que: {{ currentAdmin?.email }}</p>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="dashboard-grid">
+      <!-- Statistics Cards -->
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Utilisateurs actifs</h3>
+          <p class="stat-number">1,234</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Habitudes créées</h3>
+          <p class="stat-number">5,678</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Objectifs atteints</h3>
+          <p class="stat-number">89%</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Temps moyen</h3>
+          <p class="stat-number">24j</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="admin-actions">
+      <h2>Outils d'administration</h2>
+      <div class="actions-grid">
+        <div class="action-card">
+          <i class="fas fa-user-cog"></i>
+          <h3>Gestion utilisateurs</h3>
+          <p>Gérer les comptes utilisateurs</p>
+          <button class="action-btn">Accéder</button>
+        </div>
+
+        <div class="action-card">
+          <i class="fas fa-chart-bar"></i>
+          <h3>Statistiques</h3>
+          <p>Analyser les données d'utilisation</p>
+          <button class="action-btn">Voir stats</button>
+        </div>
+
+        <div class="action-card">
+          <i class="fas fa-cog"></i>
+          <h3>Configuration</h3>
+          <p>Paramètres système</p>
+          <button class="action-btn">Configurer</button>
+        </div>
+
+        <div class="action-card">
+          <i class="fas fa-database"></i>
+          <h3>Base de données</h3>
+          <p>Gestion des données</p>
+          <button class="action-btn">Gérer</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
