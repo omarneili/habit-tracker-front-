@@ -7,30 +7,29 @@
     <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)">
       <div class="form-group">
         <label for="nom">Nom:</label>
-        <input type="text" id="nom" name="nom" ngModel required #nom="ngModel">
+        <input type="text" id="nom" name="nom" [(ngModel)]="registerRequest.nom" required #nom="ngModel">
         <div *ngIf="nom.invalid && nom.touched" class="error">Nom requis</div>
       </div>
       <div class="form-group">
         <label for="prenom">Prénom:</label>
-        <input type="text" id="prenom" name="prenom" ngModel required #prenom="ngModel">
+        <input type="text" id="prenom" name="prenom" [(ngModel)]="registerRequest.prenom" required #prenom="ngModel">
         <div *ngIf="prenom.invalid && prenom.touched" class="error">Prénom requis</div>
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" ngModel required #email="ngModel">
+        <input type="email" id="email" name="email" [(ngModel)]="registerRequest.email" required #email="ngModel">
         <div *ngIf="email.invalid && email.touched" class="error">Email requis</div>
       </div>
       <div class="form-group">
         <label for="password">Mot de passe:</label>
-        <input type="password" id="password" name="password" ngModel required #password="ngModel">
+        <input type="password" id="password" name="password" [(ngModel)]="registerRequest.password" required #password="ngModel">
         <div *ngIf="password.invalid && password.touched" class="error">Mot de passe requis</div>
       </div>
-      <div class="form-group">
-        <label for="confirmPassword">Confirmer le mot de passe:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" ngModel required #confirmPassword="ngModel">
-        <div *ngIf="confirmPassword.invalid && confirmPassword.touched" class="error">Confirmation requise</div>
-      </div>
-      <button type="submit" [disabled]="registerForm.invalid || password.value !== confirmPassword.value">S'inscrire</button>
+
+      <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+      <button type="submit" [disabled]="registerForm.invalid || isLoading">
+        {{ isLoading ? 'Inscription...' : 'S\'inscrire' }}
+      </button>
     </form>
     <p>Déjà un compte? <a routerLink="/login">Se connecter</a></p>
   </div>

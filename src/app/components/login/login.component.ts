@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { LoginRequest } from '../../models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -12,14 +14,30 @@ import { Router } from '@angular/router';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  loginRequest: LoginRequest = { email: '', password: '' };
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   onLogin(form: any) {
     if (form.valid) {
-      console.log('Login:', form.value);
-      // TODO: Implement login logic
-      this.router.navigate(['/home']);
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      this.authService.loginUser(this.loginRequest).subscribe({
+        next: (response) => {
+          console.log('Login successful:', response);
+          this.router.navigate(['/home']);
+        },
+        error: (error) => {
+          this.errorMessage = error.message;
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
 }

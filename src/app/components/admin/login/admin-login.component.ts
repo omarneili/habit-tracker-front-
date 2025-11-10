@@ -78,22 +78,20 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
 
     const { email, password } = this.loginForm.value;
 
-    // Simulation d'appel API avec timeout
-    setTimeout(() => {
-      try {
-        const success = this.authService.login(email, password);
+    // Use the admin login method from AuthService
+    try {
+      const success = this.authService.loginAdmin(email, password);
 
-        if (success) {
-          this.handleLoginSuccess();
-        } else {
-          this.handleLoginFailure();
-        }
-      } catch (error) {
-        this.handleLoginError(error);
-      } finally {
-        this.isLoading = false;
+      if (success) {
+        this.handleLoginSuccess();
+      } else {
+        this.handleLoginFailure();
       }
-    }, 1500);
+    } catch (error) {
+      this.handleLoginError(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   private handleLoginSuccess(): void {
